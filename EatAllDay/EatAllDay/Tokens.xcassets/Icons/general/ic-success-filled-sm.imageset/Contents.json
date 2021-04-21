@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "ic-success-filled-sm.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

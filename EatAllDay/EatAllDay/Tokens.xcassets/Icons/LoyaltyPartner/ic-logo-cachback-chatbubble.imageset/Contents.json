@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "ic-logo-cachback-chatbubble.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

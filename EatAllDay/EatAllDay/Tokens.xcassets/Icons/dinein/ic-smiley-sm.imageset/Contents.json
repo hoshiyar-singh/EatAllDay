@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "ic-smiley-sm.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
