@@ -1,0 +1,16 @@
+language: swift
+osx_image: xcode10.3
+
+install:
+  - gem install xcpretty
+
+cache:
+  directories:
+  - Carthage
+
+before_install:
+ - bundle install --quiet
+
+script:
+ - bundle exec danger
+ - bundle exec fastlane test

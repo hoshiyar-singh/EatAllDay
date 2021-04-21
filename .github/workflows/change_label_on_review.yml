@@ -1,0 +1,70 @@
+name: Change label on pull request review
+
+on: [pull_request_review]
+
+jobs:
+  check_review_status:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/github-script@0.8.0
+      with:
+        github-token: "${{ secrets.GITHUB_TOKEN }}"
+        script: |
+          const ready_for_review = "READY FOR REVIEW"
+          const one_more_review = "ONE MORE REVIEW"
+          const code_reviewed = "CODE REVIEWED"
+          
+          const listReviewsResponse = await github.pulls.listReviews({
+            owner: context.issue.owner,
+            repo: context.issue.repo,
+            pull_number: context.issue.number
+          });
+
+          const review_details = listReviewsResponse.data
+          const approving_reviews = review_details.filter(review => review.state == "APPROVED")
+          const change_request_reviews = review_details.filter(review => review.state == "CHANGES_REQUESTED")
+
+          var has_pending_change_request = false
+          for (const change_request of change_request_reviews) {
+              const approvals_from_cahange_requester = approving_reviews.filter(review => review.user.login == change_request.user.login)
+              if (approvals_from_cahange_requester.length == 0) {
+                  has_pending_change_request = true
+              }
+          }
+
+          const issue = { owner: context.issue.owner, repo: context.issue.repo, issue_number: context.issue.number }
+          const list_existing_labels_response = await github.issues.listLabelsOnIssue({...issue})
+          const existing_labels = list_existing_labels_response.data
+          
+          async function removeLabel(label_to_remove) {
+            const has_label = existing_labels.filter(label => label.name == label_to_remove).length != 0
+            if (has_label) {
+               await github.issues.removeLabel({
+                ...issue,
+                name: encodeURIComponent(label_to_remove)
+              })
+            }
+          }
+
+          async function addLabel(label_to_add) {
+            const has_label = existing_labels.filter(label => label.name == label_to_add).length != 0
+              if (has_label == false) {
+                await github.issues.addLabels({
+                  ...issue,
+                  labels: [label_to_add]
+                })
+              }
+          }
+
+          if (approving_reviews.length == 1) {
+              await removeLabel(ready_for_review)
+              
+              await addLabel(one_more_review)
+          } else if (approving_reviews.length >= 2 && has_pending_change_request == false) {
+              await removeLabel(ready_for_review)
+              await removeLabel(one_more_review)
+              
+              await addLabel(code_reviewed)
+          }

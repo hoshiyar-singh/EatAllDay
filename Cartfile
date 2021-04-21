@@ -1,0 +1,2 @@
+github "deliveryhero/pd-kami" ~> 3.4.0 #ApiClient
+github "deliveryhero/pd-mob-ios-common" ~> 3.10.0 #CommonUI
